@@ -10,25 +10,20 @@ services:
     
     # Port mappings
     ports:
-      - "8000:8000"    # Transformer Lab API/Web UI
-      - "8080:8080"    # VS Code Server
-      - "8443:8443"    # Alternative VS Code Server port
+      - "8000:8000"    # Transformer Lab Web UI
     
-    # Environment variables
+    # Environment variables (LinuxServer style)
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=UTC
-      - CODE_SERVER_PASSWORD=${CODE_SERVER_PASSWORD:-transformerlab}
-      - CODE_SERVER_AUTH=password
+      - TZ=Etc/UTC
       - NVIDIA_VISIBLE_DEVICES=all  # For GPU support
     
-    # Volume mappings for persistence
+    # Volume mappings for persistence (LinuxServer style)
     volumes:
-      - ./workspace:/home/coder/workspace
-      - ./data:/home/coder/.transformerlab
-      - ./vscode-config:/home/coder/.config/code-server
-      - /var/run/docker.sock:/var/run/docker.sock  # For Docker-in-Docker if needed
+      - ./workspace:/home/abc/workspace
+      - ./config:/config
+      - ./models:/home/abc/.transformerlab/models  # Model storage
     
     # Resource limits (adjust based on your needs)
     deploy:

@@ -1,6 +1,6 @@
 # Transformer Lab Container
 
-A containerized version of Transformer Lab with integrated VS Code Server for remote development.
+A containerized version of Transformer Lab for remote access via web browser, similar to LinuxServer containers.
 
 ## 🚀 Quick Start
 
@@ -51,9 +51,7 @@ docker run -d \
 
 Once the container is running, you can access:
 
-- **🧠 Transformer Lab**: http://localhost:8000
-- **💻 VS Code Server**: http://localhost:8080
-- **🔑 Default Password**: `transformerlab` (change via `CODE_SERVER_PASSWORD`)
+- **🧠 Transformer Lab Web UI**: http://localhost:8000
 
 ## 🔧 Configuration
 
@@ -61,18 +59,17 @@ Once the container is running, you can access:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `CODE_SERVER_PASSWORD` | Password for VS Code Server | `transformerlab` |
-| `CODE_SERVER_AUTH` | Authentication method | `password` |
 | `PUID` | User ID for file permissions | `1000` |
 | `PGID` | Group ID for file permissions | `1000` |
+| `TZ` | Timezone | `Etc/UTC` |
 
 ### Volume Mounts
 
 | Host Path | Container Path | Description |
 |-----------|----------------|-------------|
-| `./workspace` | `/home/coder/workspace` | Your development workspace |
-| `./data` | `/home/coder/.transformerlab` | Transformer Lab data & models |
-| `./vscode-config` | `/home/coder/.config/code-server` | VS Code Server configuration |
+| `./workspace` | `/home/abc/workspace` | Your development workspace |
+| `./config` | `/config` | Transformer Lab configuration |
+| `./models` | `/home/abc/.transformerlab/models` | AI models storage |
 
 ## 🎯 Remote Access Methods
 
