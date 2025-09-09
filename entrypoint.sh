@@ -23,21 +23,9 @@ start_transformerlab() {
     echo -e "${GREEN}📊 Starting Transformer Lab...${NC}"
     cd "${TLAB_CODE_DIR}"
     
-    # Check if run.sh exists, if not create a simple startup script
-    if [ ! -f "./run.sh" ]; then
-        echo -e "${YELLOW}⚠️  Creating run.sh script${NC}"
-        cat > run.sh << 'EOF'
-#!/bin/bash
-source ~/.transformerlab/miniforge3/etc/profile.d/conda.sh
-conda activate ~/.transformerlab/envs/transformerlab
-python -m uvicorn transformerlab.routers.main:app --host 0.0.0.0 --port 8000 --reload
-EOF
-        chmod +x run.sh
-    fi
-    
-    # Start Transformer Lab
+    # Start Transformer Lab using the real run.sh with port 8000
     echo -e "${GREEN}🔥 Launching Transformer Lab on port 8000...${NC}"
-    exec ./run.sh
+    exec ./run.sh -p 8000 -h 0.0.0.0
 }
 
 # Function to wait for service to be ready

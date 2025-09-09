@@ -2,15 +2,17 @@ version: '3.8'
 
 services:
   transformerlab:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/banadda/labs/transformerlab:latest
+    # Uncomment below to build locally instead:
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: transformerlab-dev
     hostname: transformerlab
     
     # Port mappings
     ports:
-      - "8000:8000"    # Transformer Lab Web UI
+      - "9090:8338"    # Transformer Lab Web UI
     
     # Environment variables (LinuxServer style)
     environment:

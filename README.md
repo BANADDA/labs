@@ -21,18 +21,15 @@ docker-compose logs -f
 ### Using Docker Run
 
 ```bash
-# Build the image
-docker build -t transformerlab .
-
-# Run the container
+# Run the pre-built container (recommended)
 docker run -d \
   --name transformerlab \
-  -p 8000:8000 \
-  -p 8080:8080 \
-  -v $(pwd)/workspace:/home/coder/workspace \
-  -v $(pwd)/data:/home/coder/.transformerlab \
-  -e CODE_SERVER_PASSWORD=your-password \
-  transformerlab
+  -p 9090:8338 \
+  -v $(pwd)/workspace:/home/abc/workspace \
+  -v $(pwd)/config:/config \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  ghcr.io/banadda/labs/transformerlab:latest
 ```
 
 ### Using Pre-built Image from GitHub
@@ -41,17 +38,20 @@ docker run -d \
 # Pull and run the latest image
 docker run -d \
   --name transformerlab \
-  -p 8000:8000 \
-  -p 8080:8080 \
-  -v $(pwd)/workspace:/home/coder/workspace \
-  ghcr.io/yourusername/transformerlab:latest
+  -p 9090:8338 \
+  -v $(pwd)/workspace:/home/abc/workspace \
+  -v $(pwd)/config:/config \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  ghcr.io/banadda/labs/transformerlab:latest
 ```
 
 ## 🌐 Access Points
 
 Once the container is running, you can access:
 
-- **🧠 Transformer Lab Web UI**: http://localhost:8000
+- **🧠 Transformer Lab Web UI**: http://localhost:9090
+- **🌍 Remote Access**: http://your-server-ip:9090
 
 ## 🔧 Configuration
 
@@ -79,7 +79,7 @@ Access directly via IP:port when you have network access to the host.
 ### 2. SSH Tunneling
 ```bash
 # Forward ports through SSH
-ssh -L 8080:localhost:8080 -L 8000:localhost:8000 user@your-server
+ssh -L 9090:localhost:9090 user@your-server
 ```
 
 ### 3. Reverse Proxy (Production)
@@ -100,8 +100,8 @@ Add `.devcontainer/devcontainer.json`:
   "name": "Transformer Lab",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "transformerlab",
-  "workspaceFolder": "/home/coder/workspace",
-  "forwardPorts": [8000, 8080],
+  "workspaceFolder": "/home/abc/workspace",
+  "forwardPorts": [9090],
   "postCreateCommand": "echo 'Container ready!'"
 }
 ```
@@ -117,30 +117,22 @@ Deploy directly from GitHub with automatic builds.
 # Build the image
 docker build -t transformerlab .
 
-# Or with build args
-docker build \
-  --build-arg CODE_SERVER_VERSION=4.103.2 \
-  -t transformerlab .
-```
-
-### Running Different Modes
-
-```bash
-# Only Transformer Lab
-docker run -p 8000:8000 transformerlab transformerlab
-
-# Only VS Code Server
-docker run -p 8080:8080 transformerlab code-server
-
-# Both (default)
-docker run -p 8000:8000 -p 8080:8080 transformerlab both
+# Run locally built image
+docker run -d \
+  --name transformerlab \
+  -p 9090:8338 \
+  -v $(pwd)/workspace:/home/abc/workspace \
+  -v $(pwd)/config:/config \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  transformerlab
 ```
 
 ## 🔒 Security Considerations
 
-1. **Change Default Password**: Always set `CODE_SERVER_PASSWORD`
-2. **Use HTTPS**: Configure SSL certificates for production
-3. **Firewall**: Restrict access to necessary IPs only
+1. **Firewall**: Ensure port 9090 is properly configured in your firewall/NSG
+2. **Use HTTPS**: Configure SSL certificates for production via reverse proxy
+3. **Network Access**: Restrict access to necessary IPs only
 4. **Updates**: Regularly update the container image
 
 ## 🐛 Troubleshooting
@@ -166,16 +158,17 @@ docker exec transformerlab ps aux
 ### Permission Issues
 ```bash
 # Fix ownership of mounted volumes
-sudo chown -R 1000:1000 ./workspace ./data
+sudo chown -R 1000:1000 ./workspace ./config
 ```
 
 ## 📦 What's Included
 
 - **Transformer Lab**: Complete ML workspace with conda environment
-- **VS Code Server**: Web-based VS Code for remote development
+- **Web-based Interface**: Access via browser (no additional software needed)
 - **Python 3.11**: With ML libraries (PyTorch, Transformers, etc.)
 - **CUDA Support**: GPU acceleration (when available)
-- **Git Integration**: Pre-configured for development workflows
+- **LinuxServer-style**: PUID/PGID support, persistent storage
+- **Multi-architecture**: Supports AMD64 and ARM64
 
 ## 🤝 Contributing
 
