@@ -47,8 +47,14 @@ RUN /home/abc/install.sh install_conda
 RUN /home/abc/install.sh create_conda_environment
 RUN /home/abc/install.sh install_dependencies
 
-# Create workspace and config directories
-RUN mkdir -p /home/abc/workspace /config
+# Switch to root to create directories with proper permissions
+USER root
+# Cache bust: 2025-01-12-v1
+RUN mkdir -p /home/abc/workspace /config && \
+    chown -R abc:abc /home/abc/workspace /config
+
+# Switch back to abc user
+USER abc
 RUN ln -s /config /home/abc/.transformerlab-config
 
 # Copy configuration files
