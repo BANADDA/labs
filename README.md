@@ -8,7 +8,7 @@ A containerized version of Transformer Lab with integrated VS Code Server for re
 
 ```bash
 # Clone your repository
-git clone <your-repo-url>
+git clone https://github.com/BANADDA/labs
 cd labs
 
 # Start the container
