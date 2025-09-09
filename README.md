@@ -4,24 +4,21 @@ A containerized version of Transformer Lab for remote access via web browser, si
 
 ## 🚀 Quick Start
 
-### Using Docker Compose (Recommended)
+### Step 1: Pull the Image
 
 ```bash
-# Clone your repository
-git clone https://github.com/BANADDA/labs
-cd labs
-
-# Start the container
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
+docker pull ghcr.io/banadda/labs/transformerlab:latest
 ```
 
-### Using Docker Run
+### Step 2: Create Directories
 
 ```bash
-# Run the pre-built container (recommended)
+mkdir -p workspace config
+```
+
+### Step 3: Run the Container
+
+```bash
 docker run -d \
   --name transformerlab \
   -p 9090:8338 \
@@ -29,21 +26,24 @@ docker run -d \
   -v $(pwd)/config:/config \
   -e PUID=1000 \
   -e PGID=1000 \
+  --restart unless-stopped \
   ghcr.io/banadda/labs/transformerlab:latest
 ```
 
-### Using Pre-built Image from GitHub
+### Step 4: Access Transformer Lab
+
+Open your browser and go to:
+- **Local**: http://localhost:9090
+- **Remote**: http://your-server-ip:9090
+
+### Step 5: Check Logs (Optional)
 
 ```bash
-# Pull and run the latest image
-docker run -d \
-  --name transformerlab \
-  -p 9090:8338 \
-  -v $(pwd)/workspace:/home/abc/workspace \
-  -v $(pwd)/config:/config \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  ghcr.io/banadda/labs/transformerlab:latest
+# View container logs
+docker logs -f transformerlab
+
+# Check container status
+docker ps | grep transformerlab
 ```
 
 ## 🌐 Access Points
@@ -71,53 +71,104 @@ Once the container is running, you can access:
 | `./config` | `/config` | Transformer Lab configuration |
 | `./models` | `/home/abc/.transformerlab/models` | AI models storage |
 
-## 🎯 Remote Access Methods
+## 🌍 Remote Access & Deployment
 
-### 1. Direct Access (Local/VPN)
-Access directly via IP:port when you have network access to the host.
+### SSH Tunneling
+If you need to access a remote server securely:
 
-### 2. SSH Tunneling
 ```bash
-# Forward ports through SSH
+# Forward port through SSH
 ssh -L 9090:localhost:9090 user@your-server
+
+# Then access via http://localhost:9090
 ```
 
-### 3. Reverse Proxy (Production)
-Use nginx or Traefik for SSL termination and domain routing:
+### Firewall Configuration
+
+**Ubuntu/Debian:**
+```bash
+sudo ufw allow 9090/tcp
+```
+
+**CentOS/RHEL:**
+```bash
+sudo firewall-cmd --add-port=9090/tcp --permanent
+sudo firewall-cmd --reload
+```
+
+**Azure/AWS:**
+- Add inbound rule for port 9090 in Network Security Group
+- Allow TCP traffic from your IP or 0.0.0.0/0 (public access)
+
+### Cloud Deployment
+
+**Railway:**
+1. Fork this repository
+2. Connect to Railway
+3. Deploy from GitHub
+4. Access via provided URL
+
+**DigitalOcean App Platform:**
+1. Create new app from GitHub
+2. Use Docker deployment
+3. Set port to 8338
+4. Deploy and access
+
+## 🔧 Advanced Usage
+
+### Using Different Ports
+
+If port 9090 is busy, you can use any other port:
 
 ```bash
-# Start with reverse proxy
-docker-compose --profile proxy up -d
+# Use port 8080 instead
+docker run -d \
+  --name transformerlab \
+  -p 8080:8338 \
+  -v $(pwd)/workspace:/home/abc/workspace \
+  -v $(pwd)/config:/config \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  ghcr.io/banadda/labs/transformerlab:latest
 ```
 
-### 4. Cloud Deployment
+### Using Docker Compose
 
-#### GitHub Codespaces
-Add `.devcontainer/devcontainer.json`:
+Create a `docker-compose.yml` file:
 
-```json
-{
-  "name": "Transformer Lab",
-  "dockerComposeFile": "../docker-compose.yml",
-  "service": "transformerlab",
-  "workspaceFolder": "/home/abc/workspace",
-  "forwardPorts": [9090],
-  "postCreateCommand": "echo 'Container ready!'"
-}
+```yaml
+version: '3.8'
+services:
+  transformerlab:
+    image: ghcr.io/banadda/labs/transformerlab:latest
+    container_name: transformerlab
+    ports:
+      - "9090:8338"
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./workspace:/home/abc/workspace
+      - ./config:/config
+    restart: unless-stopped
 ```
 
-#### Railway/Render/DigitalOcean
-Deploy directly from GitHub with automatic builds.
+Then run:
+```bash
+docker-compose up -d
+```
 
-## 🛠️ Development
-
-### Building Locally
+### Updating the Container
 
 ```bash
-# Build the image
-docker build -t transformerlab .
+# Stop and remove old container
+docker stop transformerlab
+docker rm transformerlab
 
-# Run locally built image
+# Pull latest image
+docker pull ghcr.io/banadda/labs/transformerlab:latest
+
+# Run new container (your data in workspace/ and config/ is preserved)
 docker run -d \
   --name transformerlab \
   -p 9090:8338 \
@@ -125,7 +176,8 @@ docker run -d \
   -v $(pwd)/config:/config \
   -e PUID=1000 \
   -e PGID=1000 \
-  transformerlab
+  --restart unless-stopped \
+  ghcr.io/banadda/labs/transformerlab:latest
 ```
 
 ## 🔒 Security Considerations
