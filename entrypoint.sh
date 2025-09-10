@@ -41,12 +41,50 @@ wait_for_service() {
     done
 }
 
+# Function to start Cloudflare tunnel if available
+start_cloudflare_tunnel() {
+    if command -v cloudflared &> /dev/null; then
+        echo -e "${GREEN}🌐 Cloudflared detected! Starting Cloudflare tunnel...${NC}"
+        
+        # Start cloudflared in background and capture output
+        cloudflared tunnel --url http://localhost:8338 > /tmp/cloudflare.log 2>&1 &
+        CLOUDFLARE_PID=$!
+        
+        # Wait a few seconds for tunnel to establish
+        sleep 5
+        
+        # Extract the URL from logs
+        TUNNEL_URL=$(grep -o 'https://[^[:space:]]*\.trycloudflare\.com' /tmp/cloudflare.log | head -1)
+        
+        if [ ! -z "$TUNNEL_URL" ]; then
+            echo -e "${GREEN}🎉 Cloudflare Tunnel Created!${NC}"
+            echo -e "${YELLOW}🌍 Global Access URL: ${TUNNEL_URL}${NC}"
+            return 0
+        else
+            echo -e "${YELLOW}⚠️  Cloudflare tunnel starting... Check logs for URL${NC}"
+            return 1
+        fi
+    else
+        echo -e "${YELLOW}ℹ️  Cloudflared not found. Using local access only.${NC}"
+        return 1
+    fi
+}
+
 # Function to display access information
 show_access_info() {
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}🎉 Transformer Lab Container is Ready!${NC}"
+    echo -e "${GREEN}🎉 Transformer Lab Container v1.0.1 is Ready!${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${YELLOW}📊 Transformer Lab Web UI:${NC}  http://localhost:8000"
+    
+    # Try to start Cloudflare tunnel
+    if start_cloudflare_tunnel; then
+        echo -e "${GREEN}✅ Access your Transformer Lab globally via the Cloudflare URL above${NC}"
+    else
+        echo -e "${YELLOW}📊 Local Access:${NC}          http://localhost:8338"
+        echo -e "${YELLOW}🌍 Remote Access:${NC}         http://your-server-ip:port"
+        echo -e "${BLUE}💡 Tip: Install cloudflared on host for automatic HTTPS tunnel${NC}"
+    fi
+    
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
     echo -e "${BLUE}📁 Workspace:${NC}               /home/abc/workspace"
     echo -e "${BLUE}🧠 Transformer Lab Code:${NC}    ${TLAB_CODE_DIR}"

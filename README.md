@@ -1,6 +1,13 @@
-# Transformer Lab Container
+# Transformer Lab Container v1.0.1
 
-A containerized version of Transformer Lab for remote access via web browser, similar to LinuxServer containers.
+A containerized version of Transformer Lab with **automatic Cloudflare tunnel support** for instant global HTTPS access, similar to LinuxServer containers.
+
+## 🆕 **New in v1.0.1:**
+- ✅ **Auto-detects cloudflared** on host system
+- ✅ **Automatically creates Cloudflare tunnel** if available
+- ✅ **Displays HTTPS URL** in container logs
+- ✅ **Falls back to local access** if no cloudflared
+- ✅ **Zero configuration** - just run and get a link!
 
 ## 🚀 Quick Start
 
@@ -32,9 +39,20 @@ docker run -d \
 
 ### Step 4: Access Transformer Lab
 
-Open your browser and go to:
-- **Local**: http://localhost:9090
-- **Remote**: http://your-server-ip:9090
+**🎉 NEW: Automatic Cloudflare Tunnel (v1.0.1)**
+
+If you have `cloudflared` installed on your host:
+1. The container will **automatically detect** it
+2. **Create a Cloudflare tunnel** 
+3. **Display the HTTPS URL** in the logs like:
+   ```
+   🎉 Cloudflare Tunnel Created!
+   🌍 Global Access URL: https://amazing-example-url.trycloudflare.com
+   ```
+
+**Fallback: Local/Direct Access**
+- **Local**: http://localhost:9090  
+- **Remote**: http://your-server-ip:9090 (requires firewall configuration)
 
 ### Step 5: Check Logs (Optional)
 
@@ -99,6 +117,54 @@ sudo firewall-cmd --reload
 **Azure/AWS:**
 - Add inbound rule for port 9090 in Network Security Group
 - Allow TCP traffic from your IP or 0.0.0.0/0 (public access)
+
+### Cloudflare Tunnel (Recommended for Public Access)
+
+Get a secure HTTPS URL without port forwarding or firewall changes:
+
+**Step 1: Install Cloudflared**
+```bash
+# Download and install cloudflared
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+```
+
+**Step 2: Login to Cloudflare**
+```bash
+cloudflared tunnel login
+```
+
+**Step 3: Create a Tunnel**
+```bash
+# Create tunnel
+cloudflared tunnel create transformerlab
+
+# Create config file
+mkdir -p ~/.cloudflared
+cat > ~/.cloudflared/config.yml << EOF
+tunnel: transformerlab
+credentials-file: /home/$(whoami)/.cloudflared/transformerlab.json
+
+ingress:
+  - hostname: transformerlab.yourdomain.com
+    service: http://localhost:9090
+  - service: http_status:404
+EOF
+```
+
+**Step 4: Add DNS Record**
+```bash
+# Point your domain to the tunnel
+cloudflared tunnel route dns transformerlab transformerlab.yourdomain.com
+```
+
+**Step 5: Run the Tunnel**
+```bash
+# Start tunnel (run in background)
+cloudflared tunnel --config ~/.cloudflared/config.yml run &
+```
+
+**Result:** Access your Transformer Lab at `https://transformerlab.yourdomain.com` 🎉
 
 ### Cloud Deployment
 

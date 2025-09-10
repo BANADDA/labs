@@ -1,5 +1,10 @@
-# Transformer Lab Container - Similar to LinuxServer approach
+# Transformer Lab Container v1.0.1 - With Cloudflare Auto-Tunnel
 FROM ubuntu:22.04
+
+# Version and build info
+LABEL version="1.0.1"
+LABEL description="Transformer Lab with automatic Cloudflare tunnel support"
+LABEL maintainer="BANADDA"
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
