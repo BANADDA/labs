@@ -1,13 +1,13 @@
 # Transformer Lab Container v1.0.1
 
-A containerized version of Transformer Lab with **automatic Cloudflare tunnel support** for instant global HTTPS access, similar to LinuxServer containers.
+A containerized version of Transformer Lab for remote access via web browser, similar to LinuxServer containers. Clean, focused, and ready for production use.
 
-## 🆕 **New in v1.0.1:**
-- ✅ **Auto-detects cloudflared** on host system
-- ✅ **Automatically creates Cloudflare tunnel** if available
-- ✅ **Displays HTTPS URL** in container logs
-- ✅ **Falls back to local access** if no cloudflared
-- ✅ **Zero configuration** - just run and get a link!
+## 🎯 **Design Philosophy:**
+- ✅ **Container does one thing well** - runs Transformer Lab
+- ✅ **Host handles networking** - Cloudflare tunnel, reverse proxy, etc.
+- ✅ **Separation of concerns** - better maintainability
+- ✅ **LinuxServer-style** - PUID/PGID support, persistent storage
+- ✅ **Production ready** - clean logs, proper service management
 
 ## 🚀 Quick Start
 
@@ -28,7 +28,7 @@ mkdir -p workspace config
 ```bash
 docker run -d \
   --name transformerlab \
-  -p 9090:8338 \
+  -p 8000:8000 \
   -v $(pwd)/workspace:/home/abc/workspace \
   -v $(pwd)/config:/config \
   -e PUID=1000 \
@@ -39,20 +39,13 @@ docker run -d \
 
 ### Step 4: Access Transformer Lab
 
-**🎉 NEW: Automatic Cloudflare Tunnel (v1.0.1)**
+**Local Access:**
+- http://localhost:8000
 
-If you have `cloudflared` installed on your host:
-1. The container will **automatically detect** it
-2. **Create a Cloudflare tunnel** 
-3. **Display the HTTPS URL** in the logs like:
-   ```
-   🎉 Cloudflare Tunnel Created!
-   🌍 Global Access URL: https://amazing-example-url.trycloudflare.com
-   ```
-
-**Fallback: Local/Direct Access**
-- **Local**: http://localhost:9090  
-- **Remote**: http://your-server-ip:9090 (requires firewall configuration)
+**Remote Access Options:**
+- **Direct**: http://your-server-ip:8000 (requires firewall configuration)
+- **Cloudflare Tunnel**: See [Cloudflare setup](#cloudflare-tunnel-recommended-for-public-access) below
+- **Reverse Proxy**: nginx, Traefik, etc.
 
 ### Step 5: Check Logs (Optional)
 
