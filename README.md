@@ -14,7 +14,7 @@ A containerized version of Transformer Lab with **automatic Cloudflare tunnel su
 ### Step 1: Pull the Image
 
 ```bash
-docker pull ghcr.io/banadda/labs/transformerlab:latest
+docker pull ghcr.io/bigideaafrica/labs:latest
 ```
 
 ### Step 2: Create Directories
@@ -34,7 +34,7 @@ docker run -d \
   -e PUID=1000 \
   -e PGID=1000 \
   --restart unless-stopped \
-  ghcr.io/banadda/labs/transformerlab:latest
+  ghcr.io/bigideaafrica/labs:latest
 ```
 
 ### Step 4: Access Transformer Lab
@@ -195,7 +195,7 @@ docker run -d \
   -v $(pwd)/config:/config \
   -e PUID=1000 \
   -e PGID=1000 \
-  ghcr.io/banadda/labs/transformerlab:latest
+  ghcr.io/bigideaafrica/labs:latest
 ```
 
 ### Using Docker Compose
@@ -206,7 +206,7 @@ Create a `docker-compose.yml` file:
 version: '3.8'
 services:
   transformerlab:
-    image: ghcr.io/banadda/labs/transformerlab:latest
+    image: ghcr.io/bigideaafrica/labs:latest
     container_name: transformerlab
     ports:
       - "9090:8338"
@@ -232,7 +232,7 @@ docker stop transformerlab
 docker rm transformerlab
 
 # Pull latest image
-docker pull ghcr.io/banadda/labs/transformerlab:latest
+docker pull ghcr.io/bigideaafrica/labs:latest
 
 # Run new container (your data in workspace/ and config/ is preserved)
 docker run -d \
@@ -243,7 +243,7 @@ docker run -d \
   -e PUID=1000 \
   -e PGID=1000 \
   --restart unless-stopped \
-  ghcr.io/banadda/labs/transformerlab:latest
+  ghcr.io/bigideaafrica/labs:latest
 ```
 
 ## 🔒 Security Considerations
